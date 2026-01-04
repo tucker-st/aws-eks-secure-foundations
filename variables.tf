@@ -126,3 +126,16 @@ variable "eks_endpoint_public_access" {
   type        = bool
   default     = false
 }
+
+
+
+variable "eks_pod_identity_version" {
+  description = "Version of the AWS EKS Pod Identity Agent to deploy."
+  type        = string
+  default     = "v1.3.10-eksbuild.2"
+
+  # validation {
+  #   condition     = can(regex("^v\\d+\\.\\d+\\.\\d+$", var.eks_pod_identity_version))
+  #   error_message = "eks_pod_identity_version must be in the format vX.Y.Z (e.g., v0.13.1)."
+  # }
+}
