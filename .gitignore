@@ -111,3 +111,10 @@ nohup.out
 .env.*
 secrets.*
 *secret*
+
+
+examples/backend.hcl
+backend.hcl
+# Local exec scripts
+*.sh
+scripts/   
