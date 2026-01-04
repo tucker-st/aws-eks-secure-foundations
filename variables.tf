@@ -19,6 +19,17 @@ variable "region" {
   }
 }
 
+variable "aws_profile" {
+  description = "AWS CLI profile name used by the AWS provider."
+  type        = string
+  default     = "default"
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9._-]+$", var.aws_profile))
+    error_message = "aws_profile must be a simple profile name (letters/numbers/._-)."
+  }
+}
+
 variable "cluster_name" {
   description = "AWS EKS Cluster Name."
   type        = string
@@ -102,4 +113,16 @@ variable "devops_usernames" {
     condition     = alltrue([for u in var.devops_usernames : can(regex("^[a-zA-Z0-9+=,.@_-]{1,64}$", u))])
     error_message = "Each devops username must look like a valid IAM username (1-64 chars; letters, numbers, and +=,.@_-)."
   }
+}
+
+variable "eks_endpoint_private_access" {
+  description = "Enable private endpoint access to the EKS API server."
+  type        = bool
+  default     = true
+}
+
+variable "eks_endpoint_public_access" {
+  description = "Enable public endpoint access to the EKS API server (use only with compensating controls)."
+  type        = bool
+  default     = false
 }

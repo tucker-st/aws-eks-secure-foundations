@@ -9,7 +9,7 @@ provider "aws" {
   # *CAUTION* Be sure to set the profile to the AWS account you intend to use. 
   # Otherwise you may be unable to manage the EKS cluster via the AWS console.
 
-  profile = "default"
+  profile = var.aws_profile
 }
 
 # Terraform providers.
@@ -39,31 +39,12 @@ terraform {
     }
 
   }
-
-  # Storage backend for terraform state files.
-  # Be sure that the bucket name you provide here is in the same
-  # region as where the kubernetes cluster will reside.
-
-  backend "s3" {
-    bucket  = "coldduck203"                        # Set the bucket name to one you own.
-    key     = "tshoot-02sept2025-task1-v2.tfstate" # Input your own file name here.
-    region  = "us-east-1"                          # Please make sure you make this region match where you deploy your cluster.
-    encrypt = true                                 # Enable encryption of your data.
-  }
-
 }
-
-# Create an S3 gateway endpoint.
-# We can leverage this if we are storing data in S3 buckets besides the terraform
-# state file.
-/*  resource "aws_vpc_endpoint" "s3_gateway_endpoint" {
-  vpc_id = aws_vpc.main.id
-  service_name = "com.amazonaws.us-east-1.s3"
-  route_table_ids = [aws_route_table.private.id]
-  vpc_endpoint_type = "Gateway"
-   
- } */
-
+# Declare backend configuration for Terraform state.
+# Actual values are in examples/backend.hcl (untracked).
+terraform {
+  backend "s3" {}
+}
 
 
 ###############################################################################
@@ -121,7 +102,7 @@ data "tls_certificate" "demo" {
 
 # aws_vpc
 resource "aws_vpc" "main" {
-  cidr_block = "10.30.0.0/16"
+  cidr_block = var.vpc_cidr
 
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -345,17 +326,23 @@ resource "aws_eks_cluster" "demo" {
   name     = var.cluster_name
   role_arn = aws_iam_role.demo.arn
 
+  lifecycle {
+    precondition {
+      condition     = var.eks_endpoint_private_access || var.eks_endpoint_public_access
+      error_message = "At least one of eks_endpoint_private_access or eks_endpoint_public_access must be true."
+    }
+  }
+
+
   # * WARNING *
-  # This configuration sets the endpoint access to public!
-  # This should be set to private. 
-  # Since this is a demonstration cluster which will not be run for any extended period 
-  # of time we have it set to public
+  # Endpoint access is configurable. Default is private-only.
+  # If you enable public access, restrict by CIDR and ensure you have compensating controls.
 
   # Best practice is to leverage a VPN or other security asset in front of the endpoints.
 
   vpc_config {
-    endpoint_private_access = false
-    endpoint_public_access  = true
+    endpoint_private_access = var.eks_endpoint_private_access
+    endpoint_public_access  = var.eks_endpoint_public_access
 
     subnet_ids = concat(
       [aws_subnet.private[0].id, aws_subnet.private[1].id],
