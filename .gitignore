@@ -1,0 +1,113 @@
+###############################################################################
+# Terraform / Terragrunt (HARDENED)
+###############################################################################
+
+# Local Terraform directories
+.terraform/
+**/.terraform/*
+
+# State
+*.tfstate
+*.tfstate.*
+
+# Plans
+*.tfplan
+plan.out
+
+# Variables (DO NOT COMMIT)
+*.tfvars
+*.tfvars.json
+
+# Lock files (DO NOT COMMIT — per repo policy)
+terraform.lock.hcl
+.terraform.lock.hcl
+**/.terraform.lock.hcl
+
+# Overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config
+.terraformrc
+terraform.rc
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Terragrunt cache / debug
+**/.terragrunt-cache/*
+terragrunt-debug.tfvars.json
+
+###############################################################################
+# Kubernetes / Helm
+###############################################################################
+
+# kubeconfig
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+
+# Helm artifacts
+charts/
+Chart.lock
+*.tgz
+
+###############################################################################
+# Backups / temp files
+###############################################################################
+
+*.bak
+*~
+*.swp
+*.swo
+*.tmp
+
+###############################################################################
+# OS / Editor
+###############################################################################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# VS Code / JetBrains
+.vscode/
+.idea/
+*.code-workspace
+
+###############################################################################
+# Logs / output
+###############################################################################
+
+*.log
+*.out
+*.err
+nohup.out
+
+###############################################################################
+# Secrets / Env (defense-in-depth)
+###############################################################################
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+.env
+.env.*
+secrets.*
+*secret*

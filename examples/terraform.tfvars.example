@@ -1,0 +1,59 @@
+###############################################################################
+# terraform.tfvars.example
+#
+# Example configuration file.
+# Copy to terraform.tfvars and adjust values for your environment.
+# This file is safe to commit; terraform.tfvars is intentionally gitignored.
+###############################################################################
+
+# -------------------------------------------------------------------
+# Core
+# -------------------------------------------------------------------
+
+region       = "us-east-1"
+cluster_name = "staging"
+
+# If set to false, Terraform will not update local kubeconfig
+enable_kubeconfig = true
+
+# -------------------------------------------------------------------
+# Availability Zones
+# -------------------------------------------------------------------
+# Strongly recommended to pin AZs for repeatability across accounts.
+# Must contain at least 2 entries if specified.
+
+availability_zones = [
+  "us-east-1a",
+  "us-east-1b"
+]
+
+# -------------------------------------------------------------------
+# Networking
+# -------------------------------------------------------------------
+
+vpc_cidr = "10.30.0.0/16"
+
+subnet_cidr = {
+  private_zone1 = "10.30.0.0/19"
+  private_zone2 = "10.30.32.0/19"
+  public_zone1  = "10.30.64.0/19"
+  public_zone2  = "10.30.96.0/19"
+}
+
+# -------------------------------------------------------------------
+# Security
+# -------------------------------------------------------------------
+# REQUIRED: must be a /32 (single IP).
+# Example shown below is TEST-NET-3 (RFC 5737) and will NOT allow access.
+# Replace with your real public IP in /32 form.
+
+client_ip = "203.0.113.10/32"
+
+# -------------------------------------------------------------------
+# Account / IAM (optional)
+# -------------------------------------------------------------------
+# Only used if account_management/iam-devops-group.tf is applied.
+
+devops_usernames = [
+  # "example.user"
+]
