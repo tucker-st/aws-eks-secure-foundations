@@ -1,19 +1,18 @@
-# AWS EKS Secure Foundations (Single-Region)
+# AWS EKS Secure Foundations
 
-This repository implements a **single-region Amazon EKS platform foundation** using **Terraform**, with a focus on **security, operability, and audit-aware design**. It is intentionally scoped as a foundational EKS build and does not attempt to model multi-region or global architectures.
+This repository implements an **Amazon EKS platform foundation** using **Terraform**, with a focus on **security, operability, and audit-aware design**. It is intentionally scoped as a foundational EKS build and does not attempt to model global or multi-region architectures.
 
 ---
 
 ## Scope and Intent
 
 This project supports:
-- A single AWS region
 - One EKS cluster per Terraform execution
 - Infrastructure built and managed via Terraform
 - Security-first configuration with production-realistic add-ons
 
 Explicitly out of scope:
-- Multi-region deployments
+- Global or multi-region deployments
 - Active-active or cross-region failover
 - Cross-region state sharing
 - Multi-account orchestration frameworks
@@ -27,7 +26,7 @@ If deployed to another region, it is done via a **separate Terraform execution a
 This repository exists to:
 - Build a **secure and operable EKS baseline**
 - Demonstrate **realistic EKS platform construction**
-- Support **AWS certification and platform engineering skill development**
+- Support **AWS platform engineering and security skill development**
 - Bridge traditional infrastructure security practices into AWS
 
 This is **not** a minimal demo or click-through tutorial.
@@ -43,7 +42,7 @@ At a high level, this repository provisions:
 - Core Kubernetes add-ons deployed via Helm
 - Observability and optional platform services
 
-All resources are deployed into **one AWS region**, defined at runtime.
+All resources are deployed into a **single AWS region**, defined at runtime.
 
 ---
 
@@ -75,14 +74,12 @@ Key principles applied:
 - Terraform state treated as sensitive data
 - Clear separation of infrastructure and workload identity
 
-Host OS and container runtime hardening are assumed to be handled at the AMI or node layer.
+Host OS hardening and container runtime security are assumed to be handled at the AMI or node layer.
 
 ---
 
 ## Terraform Design Notes
 
-- A single AWS region is supplied via variables
-- No provider aliasing or region iteration logic
 - All inputs are defined in `variables.tf`
 - Runtime values are supplied via `terraform.tfvars` (never committed)
 - A safe example file is provided at `examples/terraform.tfvars.example`
@@ -176,18 +173,6 @@ kubectl get pods -A
 - Security group exposure
 - Observability components
 - Secure handling of Terraform state and outputs
-
----
-
-## Relationship to Other Repositories
-
-This repository complements:
-- RHCSA (EX200) practice material
-- AWS Cloud Security foundations
-- Secure Infrastructure-as-Code foundations
-- RMF-oriented operational playbooks
-
-Together, they represent a **security-minded cloud platform skillset**.
 
 ---
 
