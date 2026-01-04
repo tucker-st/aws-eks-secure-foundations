@@ -86,6 +86,13 @@ data "tls_certificate" "demo" {
 
 }
 
+data "aws_eks_addon_version" "ebs_csi_driver" {
+  addon_name         = "aws-ebs-csi-driver"
+  kubernetes_version = aws_eks_cluster.demo.version
+  most_recent        = true
+}
+
+
 ###############################################################################
 # Local Values
 ###############################################################################
@@ -344,12 +351,16 @@ resource "aws_eks_cluster" "demo" {
     endpoint_private_access = var.eks_endpoint_private_access
     endpoint_public_access  = var.eks_endpoint_public_access
 
+    # Only used when endpoint_public_access = true
+    public_access_cidrs = var.eks_endpoint_public_access ? [var.client_ip] : null
+
     subnet_ids = concat(
       [aws_subnet.private[0].id, aws_subnet.private[1].id],
       [aws_subnet.public[0].id, aws_subnet.public[1].id]
     )
-
   }
+
+
 
   # Cluster access configuration.
   # Access uses API and bootstrap access configurations.
@@ -484,7 +495,7 @@ locals {
 resource "aws_eks_addon" "pod_identity" {
   cluster_name  = aws_eks_cluster.demo.name
   addon_name    = "eks-pod-identity-agent"
-  addon_version = "v1.3.8-eksbuild.2"
+  addon_version = var.eks_pod_identity_version
 }
 
 ###############################################################################
@@ -537,11 +548,20 @@ resource "aws_eks_pod_identity_association" "ebs_csi_driver" {
   role_arn        = aws_iam_role.ebs_csi_driver.arn
 }
 
+# resource "aws_eks_addon" "ebs_csi_driver" {
+#   cluster_name             = aws_eks_cluster.demo.name
+#   addon_name               = "aws-ebs-csi-driver"
+#   addon_version            = "v1.48.0-eksbuild.1"
+#   service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+
 resource "aws_eks_addon" "ebs_csi_driver" {
-  cluster_name             = aws_eks_cluster.demo.name
-  addon_name               = "aws-ebs-csi-driver"
-  addon_version            = "v1.48.0-eksbuild.1"
-  service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+  cluster_name  = aws_eks_cluster.demo.name
+  addon_name    = "aws-ebs-csi-driver"
+  addon_version = data.aws_eks_addon_version.ebs_csi_driver.version
+
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
 
   # Added this since the EBS addon was attempting to be added
   # while the nodes were being deployed.
@@ -549,7 +569,8 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   # have all pods unscheduled no nodes available to schedule pods "
   # Need to resolve this issue for this addon.
 
-  depends_on = [aws_eks_node_group.private-nodes,
+  depends_on = [
+    aws_eks_node_group.private-nodes,
     aws_eks_cluster.demo,
     aws_iam_openid_connect_provider.oidc_provider,
     null_resource.update_kubeconfig
