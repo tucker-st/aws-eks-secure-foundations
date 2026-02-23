@@ -1,120 +1,193 @@
-###############################################################################
-# Terraform / Terragrunt (HARDENED)
-###############################################################################
+# ============================================================
+# Terraform / AWS Labs — .gitignore
+# ============================================================
+# Goals:
+# - Do NOT commit Terraform state, plans, or sensitive tfvars
+# - DO commit example files for students
+# - Do NOT commit Terraform lock files
+# - Use single student.env per lab
+# - Prevent credential / key leaks
+# ============================================================
 
-# Local Terraform directories
-.terraform/
-**/.terraform/*
+# ------------------------------------------------------------
+# Terraform working directories (ALL levels)
+# ------------------------------------------------------------
+**/.terraform/
 
-# State
-*.tfstate
-*.tfstate.*
+# ------------------------------------------------------------
+# Terraform state (NEVER commit)
+# ------------------------------------------------------------
+**/*.tfstate
+**/*.tfstate.*
 
-# Plans
-*.tfplan
-plan.out
+# ------------------------------------------------------------
+# Terraform variable files (real values never committed)
+# ------------------------------------------------------------
+**/*.tfvars
+**/*.tfvars.json
 
-# Variables (DO NOT COMMIT)
-*.tfvars
-*.tfvars.json
+# Allow examples for students
+!**/*.tfvars.example
+!**/*.auto.tfvars.example
 
-# Lock files (DO NOT COMMIT — per repo policy)
-terraform.lock.hcl
-.terraform.lock.hcl
-**/.terraform.lock.hcl
+# Student single-config file
+**/student.env
 
-# Overrides
-override.tf
-override.tf.json
+# ------------------------------------------------------------
+# Terraform override files
+# ------------------------------------------------------------
 *_override.tf
 *_override.tf.json
+override.tf
+override.tf.json
 
-# CLI config
-.terraformrc
-terraform.rc
+# ------------------------------------------------------------
+# Terraform plan files
+# ------------------------------------------------------------
+**/*.tfplan
+terraform.tfplan
+tfplan
 
-# Crash logs
+# ------------------------------------------------------------
+# Terraform provider lock files (DO NOT COMMIT)
+# ------------------------------------------------------------
+**/.terraform.lock.hcl
+*.terraform.lock.hcl
+
+# ------------------------------------------------------------
+# SSH keys / certificates (never commit)
+# ------------------------------------------------------------
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# ------------------------------------------------------------
+# Crash logs / Terraform panic output
+# ------------------------------------------------------------
 crash.log
 crash.*.log
 
-# Terragrunt cache / debug
-**/.terragrunt-cache/*
-terragrunt-debug.tfvars.json
+# ------------------------------------------------------------
+# CLI output / logs
+# ------------------------------------------------------------
+*.log
 
-###############################################################################
-# Kubernetes / Helm
-###############################################################################
-
-# kubeconfig
-kubeconfig
-kubeconfig.*
-*.kubeconfig
-
-# Helm artifacts
-charts/
-Chart.lock
-*.tgz
-
-###############################################################################
-# Backups / temp files
-###############################################################################
-
-*.bak
-*~
+# ------------------------------------------------------------
+# OS / Editor junk
+# ------------------------------------------------------------
+.idea/
+.vscode/
 *.swp
 *.swo
-*.tmp
+Thumbs.db
 
-###############################################################################
-# OS / Editor
-###############################################################################
-
-# macOS
+# ------------------------------------------------------------
+# macOS Finder metadata / AppleDouble
+# ------------------------------------------------------------
 .DS_Store
 .AppleDouble
 .LSOverride
-Icon?
 ._*
-.Spotlight-V100
-.Trashes
-.fseventsd
-.TemporaryItems
 
-# Windows
-Thumbs.db
-ehthumbs.db
+# ------------------------------------------------------------
+# Python cache (EC2 bootstrap scripts sometimes generate)
+# ------------------------------------------------------------
+__pycache__/
+*.pyc
 
-# VS Code / JetBrains
-.vscode/
-.idea/
-*.code-workspace
+# ------------------------------------------------------------
+# Zip / temp artifacts (exported lab bundles)
+# ------------------------------------------------------------
+*.zip
+*.tar.gz
 
-###############################################################################
-# Logs / output
-###############################################################################
+# ------------------------------------------------------------
+# Temporary files used during development
+# ------------------------------------------------------------
+*.orig
+*.old
 
-*.log
-*.out
-*.err
-nohup.out
+# ------------------------------------------------------------
+# Terraform backend config (S3 remote state)
+# ------------------------------------------------------------
+**/backend.hcl
+!**/backend.hcl.example
 
-###############################################################################
-# Secrets / Env (defense-in-depth)
-###############################################################################
+# ------------------------------------------------------------
+# Lab deliverables / grader artifacts (LOCAL ONLY)
+# ------------------------------------------------------------
+# deliverables/
+# deliverables/**
 
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
+STATUS.md
+STATUS.local.md
+
+gate-*.log
+gate-*.txt
+gate-*.md
+*_gate_output.*
+*_gate_results.*
+
+screenshots/
+evidence/
+proof/
+
+# ------------------------------------------------------------
+# AWS CLI / SDK cache
+# ------------------------------------------------------------
+.aws/
+.aws-sso/
+
+# ------------------------------------------------------------
+# Environment variable files
+# ------------------------------------------------------------
 .env
 .env.*
-secrets.*
-*secret*
+*.env
+
+# ------------------------------------------------------------
+# Terraform debug output
+# ------------------------------------------------------------
+TF_LOG
+TF_LOG.*
+terraform-debug.log
+
+# ------------------------------------------------------------
+# Shell history / temp
+# ------------------------------------------------------------
+.bash_history
+.zsh_history
+.history
+
+# ------------------------------------------------------------
+# macOS / Linux temp junk
+# ------------------------------------------------------------
+.Trashes
+.fseventsd
+
+# ------------------------------------------------------------
+# Deliverables policy (FLAT directory - applies repo wide)
+# - Files directly in any deliverables/ folder ARE tracked
+# - Subdirectories under deliverables/ are NOT tracked
+# ------------------------------------------------------------
+
+# Ignore subfolders under deliverables anywhere
+#**/deliverables/*/
+
+# Allow files directly inside deliverables
+# !**/deliverables/*
 
 
-examples/backend.hcl
-backend.hcl
-# Local exec scripts
-*.sh
-scripts/   
+# ------------------------------------------------------------
+# Local scratch / development folders (never commit)
+# ------------------------------------------------------------
+dev/
+working/
+**/dev/
+**/working/
+**/dev/
+**/DEV/
+**/working/
+**/WORKING/
+
